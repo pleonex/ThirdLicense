@@ -2,20 +2,23 @@
 {
     using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
 
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            var analyzer = new DotnetInspectStdoutAnalyzer();
-            var dependencies = analyzer.Analyze("");
+            string project = "";
+
+            var analyzer = new DotnetListStdoutAnalyzer();
+            var dependencies = analyzer.Analyze(project);
 
             var nugetInspector = new NuGetInspector();
             var packages = dependencies.Select(d => nugetInspector.Inspect(d));
 
             using var outputStream = new FileStream("", FileMode.Open);
             var licenseGenerator = new LicenseTextGenerator();
-            licenseGenerator.Generate(packages);
+            await licenseGenerator.Generate(packages);
         }
     }
 }

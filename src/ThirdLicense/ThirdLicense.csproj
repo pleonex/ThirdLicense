@@ -8,4 +8,8 @@
     <ToolCommandName>botsay</ToolCommandName>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Linq.Async" Version="4.1.1" />
+  </ItemGroup>
+
 </Project>
