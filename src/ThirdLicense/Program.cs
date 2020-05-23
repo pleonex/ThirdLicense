@@ -26,6 +26,9 @@ namespace ThirdLicense
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
+    using ThirdLicense.LicenseGenerator;
+    using ThirdLicense.NuGetInspect;
+    using ThirdLicense.ProjectAnalyzer;
 
     public static class Program
     {
