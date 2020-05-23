@@ -33,7 +33,6 @@ namespace ThirdLicense
 
     public static class Program
     {
-        const string NugetEndpointV2 = "https://www.nuget.org/api/v2/";
         const string DefaultOutputName = "THIRD-PARTY-NOTICES.TXT";
 
         static Task<int> Main(string[] args)
@@ -43,9 +42,9 @@ namespace ThirdLicense
                     Description = "Project file to analyze third-parties",
                     Required = true,
                 },
-                new Option<string>("--endpoint", () => NugetEndpointV2) {
+                new Option<string>("--endpoint") {
 
-                    Description = "NuGet repository endpoint (v2 only)",
+                    Description = "Additional NuGet repository endpoint",
                     Required = false,
                 },
                 new Option<string>("--output", () => DefaultOutputName) {
@@ -65,7 +64,13 @@ namespace ThirdLicense
             var analyzer = new DotnetListStdoutAnalyzer();
             var dependencies = analyzer.Analyze(project);
 
-            var nugetInspector = new NuGetProtocolInspector(endpoint);
+            var nugetInspector = new NuGetProtocolInspector();
+            if (!string.IsNullOrEmpty(endpoint)) {
+                await nugetInspector.AddEndpointAsync(endpoint);
+            }
+
+            await nugetInspector.AddDefaultEndpointsAsync();
+
             var packages = dependencies
                 .SelectAwait(d => new ValueTask<NuspecReader>(nugetInspector.InspectAsync(d)))
                 .Where(x => x != null);

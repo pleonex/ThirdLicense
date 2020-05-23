@@ -5,7 +5,10 @@
 
 ## Installation
 
-Get the latest release from the [GitHub release tab](https://github.com/pleonex/ThirdLicense/releases) or install it as a global tool from [nuget.org](https://www.nuget.org/packages/ThirdLicense).
+Get the latest release from the
+[GitHub release tab](https://github.com/pleonex/ThirdLicense/releases) or
+install it as a global tool from
+[nuget.org](https://www.nuget.org/packages/ThirdLicense).
 
 ### Run as a program
 
@@ -15,8 +18,8 @@ If you download the zip file, you can run the tool as a .NET program as follow:
 ### Install as a .NET global tool
 
 You can install it as a .NET global tool and it will be added to your `PATH`
-environment variable. Install the latest stable release from [nuget.org](https://www.nuget.org/packages/ThirdLicense)
-with:
+environment variable. Install the latest stable release from
+[nuget.org](https://www.nuget.org/packages/ThirdLicense) with:
 
 ```text
 dotnet tool install --global ThirdLicense
@@ -37,11 +40,18 @@ To run the tool make sure you have installed
 
 The program accepts the following arguments:
 
-* **project**: the project file to analyze for third-parties.
-* **output**: the output file path. By default in the current directory with name `THIRD-PARTY-NOTICES.TXT`.
-* **endpoint**: the NuGet repository endpoint (v2 only). By default it uses the one from nuget.org.
+- **project**: the project file to analyze for third-parties.
+- **output**: the output file path. By default in the current directory with
+  name `THIRD-PARTY-NOTICES.TXT`.
+- **endpoint**: optional extra NuGet repository endpoint to look for packages.
+  It will also load the enabled sources, including from local `nuget.config`
+  files.
 
 ## Build
 
-Install [.NET Core SDK 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
-and go to the _src_ folder to run `dotnet build`.
+Install
+[.NET Core SDK 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1) and
+go to the _src_ folder to run `dotnet build`.
+
+To create a runtime application run `dotnet publish -c Release` and to prepare
+the NuGet run `dotnet pack -c Release`.

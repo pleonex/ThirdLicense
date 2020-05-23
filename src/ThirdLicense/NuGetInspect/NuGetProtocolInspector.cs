@@ -20,6 +20,7 @@
 namespace ThirdLicense.NuGetInspect
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
@@ -33,33 +34,66 @@ namespace ThirdLicense.NuGetInspect
     public class NuGetProtocolInspector
     {
         readonly SourceCacheContext cache;
-        readonly SourceRepository repository;
+        readonly List<FindPackageByIdResource> repositories;
         readonly ILogger logger;
 
-        public NuGetProtocolInspector(string endpoint)
+        public NuGetProtocolInspector()
         {
             logger = NullLogger.Instance;
             cache = new SourceCacheContext();
+            repositories = new List<FindPackageByIdResource>();
+        }
 
-            PackageSource source = new PackageSource(endpoint);
-            repository = Repository.Factory.GetCoreV2(source);
+        public async Task AddDefaultEndpointsAsync()
+        {
+            var settings = Settings.LoadDefaultSettings(Environment.CurrentDirectory);
+            foreach (var source in SettingsUtility.GetEnabledSources(settings)) {
+                await AddRepositoryAsync(source);
+            }
+        }
+
+        public async Task AddEndpointAsync(string endpoint)
+        {
+            var source = new PackageSource(endpoint);
+            await AddRepositoryAsync(source);
         }
 
         public async Task<NuspecReader> InspectAsync(PackageIdentity packageId)
         {
-            var resource = await repository.GetResourceAsync<FindPackageByIdResource>();
-
-
-            CancellationToken cancellationToken = CancellationToken.None;
-            using var stream = new MemoryStream();
-            bool success = await resource.CopyNupkgToStreamAsync(packageId.Id, packageId.Version, stream, cache, logger, cancellationToken);
-            if (!success) {
-                Console.WriteLine($"- Cannot get info from: {packageId.Id} (v{packageId.Version.ToFullString()})");
-                return null;
-            } else {
-                Console.WriteLine($"+ {packageId.Id} (v{packageId.Version.ToFullString()})");
+            foreach (var repo in repositories) {
+                var nuspec = await InpsectFromRepoAsync(packageId, repo);
+                if (nuspec != null) {
+                    return nuspec;
+                }
             }
 
+            Console.WriteLine($"- Cannot get info from: {packageId.Id} (v{packageId.Version.ToFullString()})");
+            return null;
+        }
+
+        private async Task AddRepositoryAsync(PackageSource source)
+        {
+            SourceRepository repository;
+            if (source.ProtocolVersion == 2) {
+                repository = Repository.Factory.GetCoreV2(source);
+            } else {
+                repository = Repository.Factory.GetCoreV3(source.Source);
+            }
+
+            var resource = await repository.GetResourceAsync<FindPackageByIdResource>();
+            repositories.Add(resource);
+        }
+
+        private async Task<NuspecReader> InpsectFromRepoAsync(PackageIdentity packageId, FindPackageByIdResource repo)
+        {
+            CancellationToken cancellationToken = CancellationToken.None;
+            using var stream = new MemoryStream();
+            bool success = await repo.CopyNupkgToStreamAsync(packageId.Id, packageId.Version, stream, cache, logger, cancellationToken);
+            if (!success) {
+                return null;
+            }
+
+            Console.WriteLine($"+ {packageId.Id} (v{packageId.Version.ToFullString()})");
             using var reader = new PackageArchiveReader(stream);
             return await reader.GetNuspecReaderAsync(cancellationToken);
         }
