@@ -47,7 +47,7 @@ The program accepts the following arguments:
   It will also load the enabled sources, including from local `nuget.config`
   files.
 
-Exmaple of output file:
+Example of output file:
 
 ```text
 License notice for NuGet.Protocol (v5.6.0+636570e68732c1f718ede9ca07802d7b1cc69aa0)
