@@ -21,3 +21,23 @@ jobs:
       run: dotnet restore src/ThirdLicense.sln
     - name: Build
       run: dotnet build -c Release --no-restore -warnaserror src/ThirdLicense.sln
+
+    - name: Stage as .NET global tool
+      run: dotnet pack -c Release --no-build -o ./stage/
+    - name: Publish global tool artifact
+      uses: actions/upload-artifact@v2
+      with:
+        path: ./stage/ThirdLicense*.nupkg
+
+    - name: Stage as program
+      run: dotnet publish -c Release --no-build -o ./stage/ThirdLicense src/ThirdLicense/ThirdLicense.csproj
+    - name: Get third-party notice
+      run: dotnet run --no-build -- --project src/ThirdLicense/ThirdLicense.csproj --output ./stage/ThirdLicense/THIRD-PARTY-NOTICES.TXT
+    - name: Copy license and readme
+      run: cp LICENSE README.md ./stage/ThirdLicense/
+    - name: Zip program
+      run: pushd ./stage && zip -r ThirdLicense.zip ThirdLicense && popd
+    - name: Publish program artifact
+      uses: actions/upload-artifact@v2
+      with:
+        path: ./stage/ThirdLicense.zip
