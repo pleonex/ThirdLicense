@@ -22,14 +22,6 @@ jobs:
     - name: Build
       run: dotnet build -c Release --no-restore -warnaserror src/ThirdLicense.sln
 
-    - name: Run C# Code Analyzer      
-      uses: microsoft/CSharpCodeAnalyzer@v0.1-beta
-      with:
-        binary-path: src/ThirdLicense/bin/
-        repository: ${{ github.repository }}
-    - name: C# Code Analyzer analysis results
-      run: echo "${{ steps.runcsharpcodeanalyzer.outputs.results }}"
-
     - name: Stage as .NET global tool
       run: dotnet pack -c Release --no-build -o ./stage/ src/ThirdLicense/ThirdLicense.csproj
     - name: Publish global tool artifact
