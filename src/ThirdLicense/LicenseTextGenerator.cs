@@ -21,13 +21,14 @@ namespace ThirdLicense
 {
     using System.Collections.Generic;
     using System.IO;
+    using System.Text;
     using System.Threading.Tasks;
 
     public class LicenseTextGenerator
     {
         public async Task Generate(Stream output, IAsyncEnumerable<PackageInfo> packages)
         {
-            var writer = new StreamWriter(output);
+            using var writer = new StreamWriter(output, Encoding.UTF8, 1024, true);
             await foreach (var package in packages) {
                 await WritePackageNotice(writer, package);
             }
