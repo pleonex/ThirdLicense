@@ -27,7 +27,7 @@ namespace ThirdLicense
 
         public override string ToString()
         {
-            return $"[{Name}:{Version}]";
+            return $"{Name} (v{Version})";
         }
     }
 }

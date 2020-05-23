@@ -110,6 +110,7 @@ namespace ThirdLicense
                 info.LicenseContent = await new StreamReader(licenseStream).ReadToEndAsync();
             }
 
+            Console.WriteLine($"Successful dependency: {packageId}");
             return info;
         }
 

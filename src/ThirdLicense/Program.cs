@@ -19,8 +19,10 @@
 // SOFTWARE.
 namespace ThirdLicense
 {
+    using System;
     using System.CommandLine;
     using System.CommandLine.Invocation;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -55,6 +57,7 @@ namespace ThirdLicense
 
         static async Task<int> Generate(string project, string endpoint, string output)
         {
+            Stopwatch watch = Stopwatch.StartNew();
             var analyzer = new DotnetListStdoutAnalyzer();
             var dependencies = analyzer.Analyze(project);
 
@@ -67,6 +70,8 @@ namespace ThirdLicense
             var licenseGenerator = new LicenseTextGenerator();
             await licenseGenerator.Generate(outputStream, packages);
 
+            watch.Stop();
+            Console.WriteLine($"Done in {watch.Elapsed}!");
             return 0;
         }
     }
