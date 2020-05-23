@@ -21,9 +21,9 @@ namespace ThirdLicense
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.IO;
     using NuGet.Common;
     using NuGet.Configuration;
     using NuGet.Packaging;
@@ -36,6 +36,7 @@ namespace ThirdLicense
     /// </summary>
     public sealed class NuGetProtocolInspector : IDisposable
     {
+        readonly RecyclableMemoryStreamManager memoryStreamManager;
         readonly SourceCacheContext cache;
         readonly List<FindPackageByIdResource> repositories;
         readonly ILogger logger;
@@ -45,6 +46,7 @@ namespace ThirdLicense
         /// </summary>
         public NuGetProtocolInspector()
         {
+            memoryStreamManager = new RecyclableMemoryStreamManager();
             logger = NullLogger.Instance;
             cache = new SourceCacheContext();
             repositories = new List<FindPackageByIdResource>();
@@ -145,7 +147,7 @@ namespace ThirdLicense
         private async Task<NuspecReader> InpsectFromRepoAsync(PackageIdentity packageId, FindPackageByIdResource repo)
         {
             CancellationToken cancellationToken = CancellationToken.None;
-            using var stream = new MemoryStream();
+            using var stream = memoryStreamManager.GetStream();
             bool success = await repo.CopyNupkgToStreamAsync(
                 packageId.Id,
                 packageId.Version,
