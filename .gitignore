@@ -1,3 +1,6 @@
 # Compile output
 bin/
 obj/
+
+# Tests
+THIRD-PARTY-NOTICES.TXT
