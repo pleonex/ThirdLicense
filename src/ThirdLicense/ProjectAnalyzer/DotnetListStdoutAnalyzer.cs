@@ -25,10 +25,14 @@ namespace ThirdLicense.ProjectAnalyzer
     using NuGet.Packaging.Core;
     using NuGet.Versioning;
 
-    public class DotnetListStdoutAnalyzer
+    public static class DotnetListStdoutAnalyzer
     {
-        public IAsyncEnumerable<PackageIdentity> Analyze(string projectPath)
+        public static IAsyncEnumerable<PackageIdentity> Analyze(string projectPath)
         {
+            if (string.IsNullOrEmpty(projectPath)) {
+                throw new ArgumentNullException(nameof(projectPath));
+            }
+
             var stdout = GetDotnetListOutput(projectPath);
             return AnalyzeOutput(stdout);
         }
@@ -77,14 +81,14 @@ namespace ThirdLicense.ProjectAnalyzer
             using var process = Process.Start(startInfo);
 
             while (!process.StandardOutput.EndOfStream) {
-                string line = await process.StandardOutput.ReadLineAsync();
+                string line = await process.StandardOutput.ReadLineAsync().ConfigureAwait(false);
                 yield return line;
             }
 
             bool success = process.WaitForExit(30_000);
 
             if (!success || process.ExitCode != 0) {
-                throw new Exception("Cannot get dependencies info");
+                throw new InvalidOperationException("Cannot get dependencies info");
             }
         }
     }

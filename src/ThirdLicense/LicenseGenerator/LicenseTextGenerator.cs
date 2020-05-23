@@ -26,9 +26,22 @@ namespace ThirdLicense.LicenseGenerator
     using System.Threading.Tasks;
     using NuGet.Packaging;
 
-    public class LicenseTextGenerator
+    public static class LicenseTextGenerator
     {
-        public async Task Generate(Stream output, IAsyncEnumerable<NuspecReader> packages)
+        public static Task Generate(Stream output, IAsyncEnumerable<NuspecReader> packages)
+        {
+            if (output == null) {
+                throw new ArgumentNullException(nameof(output));
+            }
+
+            if (packages == null) {
+                throw new ArgumentNullException(nameof(packages));
+            }
+
+            return GenerateInternalAsync(output, packages);
+        }
+
+        private static async Task GenerateInternalAsync(Stream output, IAsyncEnumerable<NuspecReader> packages)
         {
             using var writer = new StreamWriter(output, Encoding.UTF8, 1024, true);
             await foreach (var package in packages) {
@@ -37,51 +50,51 @@ namespace ThirdLicense.LicenseGenerator
                     continue;
                 }
 
-                await WritePackageNotice(writer, package);
+                await WritePackageNotice(writer, package).ConfigureAwait(false);
             }
         }
 
-        private async Task WritePackageNotice(StreamWriter writer, NuspecReader package)
+        private static async Task WritePackageNotice(StreamWriter writer, NuspecReader package)
         {
-            await writer.WriteAsync("License notice for ");
-            await writer.WriteAsync(package.GetId());
-            await writer.WriteAsync(" (v");
-            await writer.WriteAsync(package.GetVersion().ToFullString());
-            await writer.WriteLineAsync(")");
-            await writer.WriteLineAsync("------------------------------------");
+            await writer.WriteAsync("License notice for ").ConfigureAwait(false);
+            await writer.WriteAsync(package.GetId()).ConfigureAwait(false);
+            await writer.WriteAsync(" (v").ConfigureAwait(false);
+            await writer.WriteAsync(package.GetVersion().ToFullString()).ConfigureAwait(false);
+            await writer.WriteLineAsync(")").ConfigureAwait(false);
+            await writer.WriteLineAsync("------------------------------------").ConfigureAwait(false);
 
             var repository = package.GetRepositoryMetadata();
             if (repository != null) {
-                await writer.WriteLineAsync();
-                await writer.WriteAsync(repository.Url);
+                await writer.WriteLineAsync().ConfigureAwait(false);
+                await writer.WriteAsync(repository.Url).ConfigureAwait(false);
                 if (!string.IsNullOrEmpty(repository.Commit)) {
-                    await writer.WriteAsync(" at ");
-                    await writer.WriteAsync(repository.Commit);
+                    await writer.WriteAsync(" at ").ConfigureAwait(false);
+                    await writer.WriteAsync(repository.Commit).ConfigureAwait(false);
                 }
 
-                await writer.WriteLineAsync();
+                await writer.WriteLineAsync().ConfigureAwait(false);
             }
 
-            await WriteIfNotEmpty(writer, string.Empty, package.GetProjectUrl());
-            await WriteIfNotEmpty(writer, string.Empty, package.GetCopyright());
+            await WriteIfNotEmpty(writer, string.Empty, package.GetProjectUrl()).ConfigureAwait(false);
+            await WriteIfNotEmpty(writer, string.Empty, package.GetCopyright()).ConfigureAwait(false);
 
             var license = package.GetLicenseMetadata();
             if (license != null) {
-                await WriteIfNotEmpty(writer, "Licensed under ", license.LicenseExpression.ToString());
-                await WriteIfNotEmpty(writer, "Available at ", license.LicenseUrl.AbsolutePath);
-                await WriteIfNotEmpty(writer, string.Empty, license.License);
+                await WriteIfNotEmpty(writer, "Licensed under ", license.LicenseExpression.ToString()).ConfigureAwait(false);
+                await WriteIfNotEmpty(writer, "Available at ", license.LicenseUrl.AbsolutePath).ConfigureAwait(false);
+                await WriteIfNotEmpty(writer, string.Empty, license.License).ConfigureAwait(false);
             }
 
-            await writer.WriteLineAsync();
-            await writer.WriteLineAsync();
+            await writer.WriteLineAsync().ConfigureAwait(false);
+            await writer.WriteLineAsync().ConfigureAwait(false);
         }
 
-        private async Task WriteIfNotEmpty(StreamWriter writer, string prefix, string content)
+        private static async Task WriteIfNotEmpty(StreamWriter writer, string prefix, string content)
         {
             if (!string.IsNullOrEmpty(content)) {
-                await writer.WriteLineAsync();
-                await writer.WriteAsync(prefix);
-                await writer.WriteLineAsync(content);
+                await writer.WriteLineAsync().ConfigureAwait(false);
+                await writer.WriteAsync(prefix).ConfigureAwait(false);
+                await writer.WriteLineAsync(content).ConfigureAwait(false);
             }
         }
     }

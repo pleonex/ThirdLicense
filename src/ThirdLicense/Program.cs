@@ -42,7 +42,6 @@ namespace ThirdLicense
                     Required = true,
                 },
                 new Option<string>("--endpoint") {
-
                     Description = "Additional NuGet repository endpoint",
                     Required = false,
                 },
@@ -60,23 +59,21 @@ namespace ThirdLicense
         static async Task<int> Generate(string project, string endpoint, string output)
         {
             Stopwatch watch = Stopwatch.StartNew();
-            var analyzer = new DotnetListStdoutAnalyzer();
-            var dependencies = analyzer.Analyze(project);
+            var dependencies = DotnetListStdoutAnalyzer.Analyze(project);
 
-            var nugetInspector = new NuGetProtocolInspector();
+            using var nugetInspector = new NuGetProtocolInspector();
             if (!string.IsNullOrEmpty(endpoint)) {
-                await nugetInspector.AddEndpointAsync(endpoint);
+                await nugetInspector.AddEndpointAsync(endpoint).ConfigureAwait(false);
             }
 
-            await nugetInspector.AddDefaultEndpointsAsync();
+            await nugetInspector.AddDefaultEndpointsAsync().ConfigureAwait(false);
 
             var packages = dependencies
                 .SelectAwait(d => new ValueTask<NuspecReader>(nugetInspector.InspectAsync(d)))
                 .Where(x => x != null);
 
             using var outputStream = new FileStream(output, FileMode.Create);
-            var licenseGenerator = new LicenseTextGenerator();
-            await licenseGenerator.Generate(outputStream, packages);
+            await LicenseTextGenerator.Generate(outputStream, packages).ConfigureAwait(false);
 
             watch.Stop();
             Console.WriteLine($"Done in {watch.Elapsed}!");

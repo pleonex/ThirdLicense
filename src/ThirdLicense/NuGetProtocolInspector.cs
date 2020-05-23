@@ -31,7 +31,7 @@ namespace ThirdLicense
     using NuGet.Protocol;
     using NuGet.Protocol.Core.Types;
 
-    public class NuGetProtocolInspector
+    public sealed class NuGetProtocolInspector : IDisposable
     {
         readonly SourceCacheContext cache;
         readonly List<FindPackageByIdResource> repositories;
@@ -44,31 +44,46 @@ namespace ThirdLicense
             repositories = new List<FindPackageByIdResource>();
         }
 
+        public bool Disposed {
+            get;
+            private set;
+        }
+
+        public void Dispose()
+        {
+            if (Disposed) {
+                return;
+            }
+
+            Disposed = true;
+            cache.Dispose();
+        }
+
         public async Task AddDefaultEndpointsAsync()
         {
             var settings = Settings.LoadDefaultSettings(Environment.CurrentDirectory);
             foreach (var source in SettingsUtility.GetEnabledSources(settings)) {
-                await AddRepositoryAsync(source);
+                await AddRepositoryAsync(source).ConfigureAwait(false);
             }
         }
 
-        public async Task AddEndpointAsync(string endpoint)
+        public Task AddEndpointAsync(string endpoint)
         {
+            if (string.IsNullOrEmpty(endpoint)) {
+                throw new ArgumentNullException(nameof(endpoint));
+            }
+
             var source = new PackageSource(endpoint);
-            await AddRepositoryAsync(source);
+            return AddRepositoryAsync(source);
         }
 
-        public async Task<NuspecReader> InspectAsync(PackageIdentity packageId)
+        public Task<NuspecReader> InspectAsync(PackageIdentity packageId)
         {
-            foreach (var repo in repositories) {
-                var nuspec = await InpsectFromRepoAsync(packageId, repo);
-                if (nuspec != null) {
-                    return nuspec;
-                }
+            if (packageId == null) {
+                throw new ArgumentNullException(nameof(packageId));
             }
 
-            Console.WriteLine($"- Cannot get info from: {packageId.Id} (v{packageId.Version.ToFullString()})");
-            return null;
+            return InspectPackageAsync(packageId);
         }
 
         private async Task AddRepositoryAsync(PackageSource source)
@@ -80,22 +95,43 @@ namespace ThirdLicense
                 repository = Repository.Factory.GetCoreV3(source.Source);
             }
 
-            var resource = await repository.GetResourceAsync<FindPackageByIdResource>();
+            var resource = await repository.GetResourceAsync<FindPackageByIdResource>().ConfigureAwait(false);
             repositories.Add(resource);
+        }
+
+        private async Task<NuspecReader> InspectPackageAsync(PackageIdentity packageId)
+        {
+            foreach (var repo in repositories) {
+                var nuspec = await InpsectFromRepoAsync(packageId, repo).ConfigureAwait(false);
+                if (nuspec != null) {
+                    return nuspec;
+                }
+            }
+
+            Console.WriteLine($"- Cannot get info from: {packageId.Id} (v{packageId.Version.ToFullString()})");
+            return null;
         }
 
         private async Task<NuspecReader> InpsectFromRepoAsync(PackageIdentity packageId, FindPackageByIdResource repo)
         {
             CancellationToken cancellationToken = CancellationToken.None;
             using var stream = new MemoryStream();
-            bool success = await repo.CopyNupkgToStreamAsync(packageId.Id, packageId.Version, stream, cache, logger, cancellationToken);
+            bool success = await repo.CopyNupkgToStreamAsync(
+                packageId.Id,
+                packageId.Version,
+                stream,
+                cache,
+                logger,
+                cancellationToken)
+                .ConfigureAwait(false);
+
             if (!success) {
                 return null;
             }
 
             Console.WriteLine($"+ {packageId.Id} (v{packageId.Version.ToFullString()})");
             using var reader = new PackageArchiveReader(stream);
-            return await reader.GetNuspecReaderAsync(cancellationToken);
+            return await reader.GetNuspecReaderAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }
