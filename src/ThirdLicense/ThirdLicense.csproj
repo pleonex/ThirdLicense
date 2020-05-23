@@ -9,7 +9,7 @@
 
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackAsTool>true</PackAsTool>
-    <ToolCommandName>botsay</ToolCommandName>
+    <ToolCommandName>thirdlicense</ToolCommandName>
   </PropertyGroup>
 
   <PropertyGroup>
