@@ -2,10 +2,22 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <Version>1.0.0</Version>
+    <Description>Generates transitive third-party license notice</Description>
+    <Product>ThirdLicense</Product>
+    <Copyright>(c) 2020 Benito Palacios Sánchez</Copyright>
 
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>botsay</ToolCommandName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>pleonex</Authors>
+    <PackageProjectUrl>https://github.com/pleonex/ThirdLicense</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/pleonex/ThirdLicense</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>dotnet-tool;third-party;license;dotnet</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,4 +1,23 @@
-﻿namespace ThirdLicense
+﻿// Copyright (c) 2020 Benito Palacios Sánchez
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+namespace ThirdLicense
 {
     using System.CommandLine;
     using System.CommandLine.Invocation;
@@ -6,14 +25,14 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    class Program
+    public static class Program
     {
         const string NugetEndpointV2 = "https://www.nuget.org/api/v2/";
         const string DefaultOutputName = "THIRD-PARTY-NOTICES.TXT";
 
         static Task<int> Main(string[] args)
         {
-            var rootCommand = new RootCommand("Generate transitive third-party license notice") {
+            var rootCommand = new RootCommand("Generates transitive third-party license notice") {
                 new Option<string>("--project") {
                     Description = "Project file to analyze third-parties",
                     Required = true,
