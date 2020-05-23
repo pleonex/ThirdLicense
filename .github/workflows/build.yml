@@ -18,6 +18,6 @@ jobs:
       with:
         dotnet-version: 3.1.300
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore src/ThirdLicense.sln
     - name: Build
-      run: dotnet build -c Release --no-restore -warnaserror
+      run: dotnet build -c Release --no-restore -warnaserror src/ThirdLicense.sln
