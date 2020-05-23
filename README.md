@@ -47,6 +47,28 @@ The program accepts the following arguments:
   It will also load the enabled sources, including from local `nuget.config`
   files.
 
+Exmaple of output file:
+
+```text
+License notice for NuGet.Protocol (v5.6.0+636570e68732c1f718ede9ca07802d7b1cc69aa0)
+------------------------------------
+
+https://github.com/NuGet/NuGet.Client at 636570e68732c1f718ede9ca07802d7b1cc69aa0
+
+https://aka.ms/nugetprj
+
+Copyright © Microsoft Corporation. All rights reserved.
+
+Licensed under Apache-2.0
+
+Available at https://licenses.nuget.org/Apache-2.0
+
+
+License notice for System.CommandLine (v2.0.0-beta1.20253.1)
+------------------------------------
+[...]
+```
+
 ## Build
 
 Install

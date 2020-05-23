@@ -73,7 +73,7 @@ namespace ThirdLicense.LicenseGenerator
             await writer.WriteLineAsync("------------------------------------").ConfigureAwait(false);
 
             var repository = package.GetRepositoryMetadata();
-            if (repository != null) {
+            if (!string.IsNullOrEmpty(repository?.Url)) {
                 await writer.WriteLineAsync().ConfigureAwait(false);
                 await writer.WriteAsync(repository.Url).ConfigureAwait(false);
                 if (!string.IsNullOrEmpty(repository.Commit)) {
@@ -84,14 +84,28 @@ namespace ThirdLicense.LicenseGenerator
                 await writer.WriteLineAsync().ConfigureAwait(false);
             }
 
-            await WriteIfNotEmpty(writer, string.Empty, package.GetProjectUrl()).ConfigureAwait(false);
-            await WriteIfNotEmpty(writer, string.Empty, package.GetCopyright()).ConfigureAwait(false);
+            string projectUrl = package.GetProjectUrl();
+            if (projectUrl != repository?.Url) {
+                await WriteIfNotEmpty(writer, string.Empty, projectUrl).ConfigureAwait(false);
+            }
+
+            string copyright = package.GetCopyright();
+            string copyrightPrefix = string.Empty;
+            if (copyright?.Length > 0 && copyright[0] == '©') {
+                copyrightPrefix = "Copyright ";
+            }
+
+            await WriteIfNotEmpty(writer, copyrightPrefix, copyright).ConfigureAwait(false);
 
             var license = package.GetLicenseMetadata();
             if (license != null) {
-                await WriteIfNotEmpty(writer, "Licensed under ", license.LicenseExpression.ToString()).ConfigureAwait(false);
-                await WriteIfNotEmpty(writer, "Available at ", license.LicenseUrl.AbsolutePath).ConfigureAwait(false);
-                await WriteIfNotEmpty(writer, string.Empty, license.License).ConfigureAwait(false);
+                string licenseExpression = license.LicenseExpression?.ToString();
+                await WriteIfNotEmpty(writer, "Licensed under ", licenseExpression).ConfigureAwait(false);
+                await WriteIfNotEmpty(writer, "Available at ", license.LicenseUrl?.AbsoluteUri).ConfigureAwait(false);
+
+                if (license.License != licenseExpression) {
+                    await WriteIfNotEmpty(writer, string.Empty, license.License).ConfigureAwait(false);
+                }
             }
 
             await writer.WriteLineAsync().ConfigureAwait(false);
