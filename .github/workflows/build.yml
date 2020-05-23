@@ -32,7 +32,7 @@ jobs:
     - name: Stage as program
       run: dotnet publish -c Release --no-build -o ./stage/ThirdLicense src/ThirdLicense/ThirdLicense.csproj
     - name: Get third-party notice
-      run: dotnet run --no-build -- --project src/ThirdLicense/ThirdLicense.csproj --output ./stage/ThirdLicense/THIRD-PARTY-NOTICES.TXT
+      run: dotnet ./stage/ThirdLicense/ThirdLicense.dll --project src/ThirdLicense/ThirdLicense.csproj --output ./stage/ThirdLicense/THIRD-PARTY-NOTICES.TXT
     - name: Copy license and readme
       run: cp LICENSE README.md ./stage/ThirdLicense/
     - name: Zip program

@@ -1,6 +1,7 @@
 # Compile output
 bin/
 obj/
+stage/
 
 # Tests
 THIRD-PARTY-NOTICES.TXT
