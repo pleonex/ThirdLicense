@@ -23,7 +23,7 @@ jobs:
       run: dotnet build -c Release --no-restore -warnaserror src/ThirdLicense.sln
 
     - name: Stage as .NET global tool
-      run: dotnet pack -c Release --no-build -o ./stage/
+      run: dotnet pack -c Release --no-build -o ./stage/ src/ThirdLicense/ThirdLicense.csproj
     - name: Publish global tool artifact
       uses: actions/upload-artifact@v2
       with:
