@@ -21,20 +21,21 @@ namespace ThirdLicense.ProjectAnalyzer
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Diagnostics;
+    using NuGet.Packaging.Core;
+    using NuGet.Versioning;
 
     public class DotnetListStdoutAnalyzer
     {
-        public IAsyncEnumerable<PackageId> Analyze(string projectPath)
+        public IAsyncEnumerable<PackageIdentity> Analyze(string projectPath)
         {
             var stdout = GetDotnetListOutput(projectPath);
             return AnalyzeOutput(stdout);
         }
 
-        private static async IAsyncEnumerable<PackageId> AnalyzeOutput(IAsyncEnumerable<string> lines)
+        private static async IAsyncEnumerable<PackageIdentity> AnalyzeOutput(IAsyncEnumerable<string> lines)
         {
-            List<PackageId> uniquePackages = new List<PackageId>();
+            var uniquePackages = new List<PackageIdentity>();
 
             await foreach (var line in lines) {
                 if (line.Length < 6 || line[3] != '>') {
@@ -46,18 +47,18 @@ namespace ThirdLicense.ProjectAnalyzer
                     continue;
                 }
 
-                string name = content[1];
-                string version = content[^1];
-                if (uniquePackages.Any(p => p.Name == name && p.Version == version)) {
+                bool success = NuGetVersion.TryParse(content[^1], out NuGetVersion version);
+                if (!success) {
+                    throw new FormatException("Cannot parse: " + content[^1]);
+                }
+
+                var packageId = new PackageIdentity(content[1], version);
+                if (uniquePackages.Contains(packageId)) {
                     continue;
                 }
 
-                var package = new PackageId();
-                package.Name = name;
-                package.Version = version;
-
-                uniquePackages.Add(package);
-                yield return package;
+                uniquePackages.Add(packageId);
+                yield return packageId;
             }
         }
 

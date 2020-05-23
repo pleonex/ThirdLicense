@@ -26,6 +26,7 @@ namespace ThirdLicense
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
+    using NuGet.Packaging;
     using ThirdLicense.LicenseGenerator;
     using ThirdLicense.NuGetInspect;
     using ThirdLicense.ProjectAnalyzer;
@@ -64,9 +65,9 @@ namespace ThirdLicense
             var analyzer = new DotnetListStdoutAnalyzer();
             var dependencies = analyzer.Analyze(project);
 
-            var nugetInspector = new NuGetV2Inspector(endpoint);
+            var nugetInspector = new NuGetProtocolInspector(endpoint);
             var packages = dependencies
-                .SelectAwait(d => nugetInspector.InspectAsync(d))
+                .SelectAwait(d => new ValueTask<NuspecReader>(nugetInspector.InspectAsync(d)))
                 .Where(x => x != null);
 
             using var outputStream = new FileStream(output, FileMode.Create);
