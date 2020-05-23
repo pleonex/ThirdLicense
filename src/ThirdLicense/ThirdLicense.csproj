@@ -11,6 +11,7 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>thirdlicense</ToolCommandName>
 
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CodeAnalysisRuleSet>..\Standard.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 

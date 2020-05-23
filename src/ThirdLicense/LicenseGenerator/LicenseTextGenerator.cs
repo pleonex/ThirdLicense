@@ -26,8 +26,17 @@ namespace ThirdLicense.LicenseGenerator
     using System.Threading.Tasks;
     using NuGet.Packaging;
 
+    /// <summary>
+    /// Represents a text license generator.
+    /// </summary>
     public static class LicenseTextGenerator
     {
+        /// <summary>
+        /// Generates a text file with the license content of each package.
+        /// </summary>
+        /// <param name="output">The stream to write the license content.</param>
+        /// <param name="packages">The collection of packages to analyze.</param>
+        /// <returns>The asynchronous task.</returns>
         public static Task Generate(Stream output, IAsyncEnumerable<NuspecReader> packages)
         {
             if (output == null) {

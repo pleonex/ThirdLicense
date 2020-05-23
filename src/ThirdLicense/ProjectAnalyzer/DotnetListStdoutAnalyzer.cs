@@ -25,8 +25,16 @@ namespace ThirdLicense.ProjectAnalyzer
     using NuGet.Packaging.Core;
     using NuGet.Versioning;
 
+    /// <summary>
+    /// Represents a .NET project analyzer that provides with the transitive dependencies.
+    /// </summary>
     public static class DotnetListStdoutAnalyzer
     {
+        /// <summary>
+        /// Analyzes a .NET projects and retrieves its transitive dependencies.
+        /// </summary>
+        /// <param name="projectPath">The path to the project file.</param>
+        /// <returns>An enumeration with the transitive dependencies.</returns>
         public static IAsyncEnumerable<PackageIdentity> Analyze(string projectPath)
         {
             if (string.IsNullOrEmpty(projectPath)) {

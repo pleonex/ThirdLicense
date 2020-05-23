@@ -31,12 +31,18 @@ namespace ThirdLicense
     using NuGet.Protocol;
     using NuGet.Protocol.Core.Types;
 
+    /// <summary>
+    /// Represents a NuGet package inspector by providing with its metadata.
+    /// </summary>
     public sealed class NuGetProtocolInspector : IDisposable
     {
         readonly SourceCacheContext cache;
         readonly List<FindPackageByIdResource> repositories;
         readonly ILogger logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NuGetProtocolInspector" /> class.
+        /// </summary>
         public NuGetProtocolInspector()
         {
             logger = NullLogger.Instance;
@@ -44,11 +50,17 @@ namespace ThirdLicense
             repositories = new List<FindPackageByIdResource>();
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the resources of the object has been released.
+        /// </summary>
         public bool Disposed {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Releases the resources of the object.
+        /// </summary>
         public void Dispose()
         {
             if (Disposed) {
@@ -59,6 +71,14 @@ namespace ThirdLicense
             cache.Dispose();
         }
 
+        /// <summary>
+        /// Adds all the NuGet enabled endpoints configured in the system.
+        /// </summary>
+        /// <remarks>
+        /// This methods reads the system configuration as well as the NuGet
+        /// configuration files from the current working directory.
+        /// </remarks>
+        /// <returns>The asynchronous task.</returns>
         public async Task AddDefaultEndpointsAsync()
         {
             var settings = Settings.LoadDefaultSettings(Environment.CurrentDirectory);
@@ -67,6 +87,11 @@ namespace ThirdLicense
             }
         }
 
+        /// <summary>
+        /// Adds an additional NuGet endpoint.
+        /// </summary>
+        /// <param name="endpoint">The NuGet endpoint.</param>
+        /// <returns>The asynchronous task.</returns>
         public Task AddEndpointAsync(string endpoint)
         {
             if (string.IsNullOrEmpty(endpoint)) {
@@ -77,6 +102,11 @@ namespace ThirdLicense
             return AddRepositoryAsync(source);
         }
 
+        /// <summary>
+        /// Inspects a NuGet package to provide with its metadata.
+        /// </summary>
+        /// <param name="packageId">The package identifier to inspect.</param>
+        /// <returns>The asynchronous task with the NuGet metadata.</returns>
         public Task<NuspecReader> InspectAsync(PackageIdentity packageId)
         {
             if (packageId == null) {

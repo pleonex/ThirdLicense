@@ -30,11 +30,19 @@ namespace ThirdLicense
     using ThirdLicense.LicenseGenerator;
     using ThirdLicense.ProjectAnalyzer;
 
-    public static class Program
+    /// <summary>
+    /// Application entry-point.
+    /// </summary>
+    internal static class Program
     {
         const string DefaultOutputName = "THIRD-PARTY-NOTICES.TXT";
 
-        static Task<int> Main(string[] args)
+        /// <summary>
+        /// Runs the application.
+        /// </summary>
+        /// <param name="args">The application arguments.</param>
+        /// <returns>The return code of the application.</returns>
+        internal static Task<int> Main(string[] args)
         {
             var rootCommand = new RootCommand("Generates transitive third-party license notice") {
                 new Option<string>("--project") {
