@@ -106,6 +106,8 @@ namespace ThirdLicense.LicenseGenerator
                 if (license.License != licenseExpression) {
                     await WriteIfNotEmpty(writer, string.Empty, license.License).ConfigureAwait(false);
                 }
+            } else {
+                await WriteIfNotEmpty(writer, "License available at ", package.GetLicenseUrl()).ConfigureAwait(false);
             }
 
             await writer.WriteLineAsync().ConfigureAwait(false);
