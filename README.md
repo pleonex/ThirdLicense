@@ -1,4 +1,4 @@
-# Third License ![.NET Core](https://github.com/pleonex/ThirdLicense/workflows/.NET%20Core/badge.svg?branch=master) [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://choosealicense.com/licenses/mit/)
+# Third License ![Build status](https://github.com/pleonex/ThirdLicense/workflows/Build/badge.svg?branch=main) [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://choosealicense.com/licenses/mit/)
 
 > .NET tool to generate _third-party_ notice files from all the transitive
 > dependencies of a .NET project.
@@ -36,7 +36,7 @@ Then, you can run it just by the command name: `thirdlicense`
 ## Usage
 
 To run the tool make sure you have installed
-[.NET Core SDK 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1).
+[.NET 6.0 runtime](https://dotnet.microsoft.com/download/dotnet/6.0).
 
 The program accepts the following arguments:
 
@@ -71,9 +71,8 @@ License notice for System.CommandLine (v2.0.0-beta1.20253.1)
 
 ## Build
 
-Install
-[.NET Core SDK 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1) and
-go to the _src_ folder to run `dotnet build`.
+Install [.NET SDK 6.0](https://dotnet.microsoft.com/download/dotnet/6.0) and go
+to the _src_ folder to run `dotnet build`.
 
 To create a runtime application run `dotnet publish -c Release` and to prepare
 the NuGet run `dotnet pack -c Release`.
