@@ -21,7 +21,12 @@
     <RepositoryUrl>https://github.com/pleonex/ThirdLicense</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>dotnet-tool;third-party;license;dotnet</PackageTags>
+    <PackageReleaseNotes>https://github.com/pleonex/ThirdLicense/releases</PackageReleaseNotes>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/README.md" Visible="false" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.0" />
