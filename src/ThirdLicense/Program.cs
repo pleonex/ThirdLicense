@@ -47,15 +47,15 @@ namespace ThirdLicense
             var rootCommand = new RootCommand("Generates transitive third-party license notice") {
                 new Option<string>("--project") {
                     Description = "Project file to analyze third-parties",
-                    Required = true,
+                    IsRequired = true,
                 },
                 new Option<string>("--endpoint") {
                     Description = "Additional NuGet repository endpoint",
-                    Required = false,
+                    IsRequired = false,
                 },
                 new Option<string>("--output", () => DefaultOutputName) {
                     Description = "Path to the output file",
-                    Required = true,
+                    IsRequired = true,
                 },
             };
 
