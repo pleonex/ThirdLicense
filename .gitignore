@@ -3,5 +3,9 @@ bin/
 obj/
 stage/
 
+# IDEs
+.vs/
+*.csproj.user
+
 # Tests
 THIRD-PARTY-NOTICES.TXT
