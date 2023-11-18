@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Benito Palacios Sánchez
+﻿// Copyright (c) 2020 Benito Palacios Sánchez
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,6 @@ namespace ThirdLicense
 {
     using System;
     using System.CommandLine;
-    using System.CommandLine.Invocation;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -45,16 +44,16 @@ namespace ThirdLicense
         internal static Task<int> Main(string[] args)
         {
             var projectArg = new Option<FileInfo>("--project") {
-                    Description = "Project file to analyze third-parties",
-                    IsRequired = true,
+                Description = "Project file to analyze third-parties",
+                IsRequired = true,
             };
             var endpointArg = new Option<string>("--endpoint") {
-                    Description = "Additional NuGet repository endpoint",
-                    IsRequired = false,
+                Description = "Additional NuGet repository endpoint",
+                IsRequired = false,
             };
             var outputArg = new Option<FileInfo>("--output", () => new FileInfo(DefaultOutputName)) {
-                    Description = "Path to the output file",
-                    IsRequired = true,
+                Description = "Path to the output file",
+                IsRequired = true,
             };
 
             var rootCommand = new RootCommand("Generates transitive third-party license notice") {
@@ -69,6 +68,23 @@ namespace ThirdLicense
 
         static async Task<int> Generate(FileInfo project, string endpoint, FileInfo output)
         {
+            Console.WriteLine("Project: {0}", project.FullName);
+            Console.WriteLine("Output file: {0}", output.FullName);
+            if (!string.IsNullOrEmpty(endpoint)) {
+                Console.WriteLine("Endpoint: {0}", endpoint);
+            } else {
+                Console.WriteLine("Default endpoints");
+            }
+
+            if (!project.Exists) {
+                Console.WriteLine("Cannot find project file: {0}", project.FullName);
+                return -1;
+            }
+
+            if (!output.Directory.Exists) {
+                output.Directory.Create();
+            }
+
             Stopwatch watch = Stopwatch.StartNew();
             var dependencies = DotnetListStdoutAnalyzer.Analyze(project.FullName);
 

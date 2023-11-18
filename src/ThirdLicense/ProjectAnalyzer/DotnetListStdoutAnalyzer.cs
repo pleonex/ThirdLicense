@@ -22,6 +22,7 @@ namespace ThirdLicense.ProjectAnalyzer
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.IO;
     using NuGet.Packaging.Core;
     using NuGet.Versioning;
 
@@ -40,6 +41,10 @@ namespace ThirdLicense.ProjectAnalyzer
             if (string.IsNullOrEmpty(projectPath)) {
                 throw new ArgumentNullException(nameof(projectPath));
             }
+
+            // .NET 8 may throw errors if it's a relative path
+            // https://github.com/NuGet/Home/issues/12954
+            projectPath = Path.GetFullPath(projectPath);
 
             var stdout = GetDotnetListOutput(projectPath);
             return AnalyzeOutput(stdout);
