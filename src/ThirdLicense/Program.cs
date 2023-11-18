@@ -43,7 +43,7 @@ namespace ThirdLicense
         /// <returns>The return code of the application.</returns>
         internal static Task<int> Main(string[] args)
         {
-            var projectArg = new Option<FileInfo>("--project") {
+            var projectArg = new Option<string>("--project") {
                 Description = "Project file to analyze third-parties",
                 IsRequired = true,
             };
@@ -66,9 +66,9 @@ namespace ThirdLicense
             return rootCommand.InvokeAsync(args);
         }
 
-        static async Task<int> Generate(FileInfo project, string endpoint, FileInfo output)
+        static async Task<int> Generate(string project, string endpoint, FileInfo output)
         {
-            Console.WriteLine("Project: {0}", project.FullName);
+            Console.WriteLine("Project: {0}", project);
             Console.WriteLine("Output file: {0}", output.FullName);
             if (!string.IsNullOrEmpty(endpoint)) {
                 Console.WriteLine("Endpoint: {0}", endpoint);
@@ -76,8 +76,8 @@ namespace ThirdLicense
                 Console.WriteLine("Default endpoints");
             }
 
-            if (!project.Exists) {
-                Console.WriteLine("Cannot find project file: {0}", project.FullName);
+            if (!File.Exists(project) && !Directory.Exists(project)) {
+                Console.WriteLine("Cannot find project file or folder: {0}", project);
                 return -1;
             }
 
@@ -86,7 +86,7 @@ namespace ThirdLicense
             }
 
             Stopwatch watch = Stopwatch.StartNew();
-            var dependencies = DotnetListStdoutAnalyzer.Analyze(project.FullName);
+            var dependencies = DotnetListStdoutAnalyzer.Analyze(project);
 
             using var nugetInspector = new NuGetProtocolInspector();
             if (!string.IsNullOrEmpty(endpoint)) {
