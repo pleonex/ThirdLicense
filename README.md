@@ -36,7 +36,7 @@ Then, you can run it just by the command name: `thirdlicense`
 ## Usage
 
 To run the tool make sure you have installed
-[.NET 6.0 runtime](https://dotnet.microsoft.com/download/dotnet/6.0).
+[.NET 8.0 runtime](https://dotnet.microsoft.com/download/dotnet/8.0).
 
 The program accepts the following arguments:
 
@@ -71,7 +71,7 @@ License notice for System.CommandLine (v2.0.0-beta1.20253.1)
 
 ## Build
 
-Install [.NET SDK 6.0](https://dotnet.microsoft.com/download/dotnet/6.0) and go
+Install [.NET SDK 8.0](https://dotnet.microsoft.com/download/dotnet/8.0) and go
 to the _src_ folder to run `dotnet build`.
 
 To create a runtime application run `dotnet publish -c Release` and to prepare

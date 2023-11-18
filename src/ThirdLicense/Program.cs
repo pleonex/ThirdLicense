@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2020 Benito Palacios Sánchez
+// Copyright (c) 2020 Benito Palacios Sánchez
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -44,30 +44,33 @@ namespace ThirdLicense
         /// <returns>The return code of the application.</returns>
         internal static Task<int> Main(string[] args)
         {
-            var rootCommand = new RootCommand("Generates transitive third-party license notice") {
-                new Option<string>("--project") {
+            var projectArg = new Option<FileInfo>("--project") {
                     Description = "Project file to analyze third-parties",
                     IsRequired = true,
-                },
-                new Option<string>("--endpoint") {
+            };
+            var endpointArg = new Option<string>("--endpoint") {
                     Description = "Additional NuGet repository endpoint",
                     IsRequired = false,
-                },
-                new Option<string>("--output", () => DefaultOutputName) {
+            };
+            var outputArg = new Option<FileInfo>("--output", () => new FileInfo(DefaultOutputName)) {
                     Description = "Path to the output file",
                     IsRequired = true,
-                },
             };
 
-            rootCommand.Handler = CommandHandler.Create<string, string, string>(Generate);
+            var rootCommand = new RootCommand("Generates transitive third-party license notice") {
+                projectArg,
+                endpointArg,
+                outputArg,
+            };
+            rootCommand.SetHandler(Generate, projectArg, endpointArg, outputArg);
 
             return rootCommand.InvokeAsync(args);
         }
 
-        static async Task<int> Generate(string project, string endpoint, string output)
+        static async Task<int> Generate(FileInfo project, string endpoint, FileInfo output)
         {
             Stopwatch watch = Stopwatch.StartNew();
-            var dependencies = DotnetListStdoutAnalyzer.Analyze(project);
+            var dependencies = DotnetListStdoutAnalyzer.Analyze(project.FullName);
 
             using var nugetInspector = new NuGetProtocolInspector();
             if (!string.IsNullOrEmpty(endpoint)) {
@@ -80,7 +83,7 @@ namespace ThirdLicense
                 .SelectAwait(d => new ValueTask<NuspecReader>(nugetInspector.InspectAsync(d)))
                 .Where(x => x != null);
 
-            using var outputStream = new FileStream(output, FileMode.Create);
+            using var outputStream = new FileStream(output.FullName, FileMode.Create);
             await LicenseTextGenerator.Generate(outputStream, packages).ConfigureAwait(false);
 
             watch.Stop();
