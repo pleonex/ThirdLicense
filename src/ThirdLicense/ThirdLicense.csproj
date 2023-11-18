@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <Version>1.3.0</Version>
+    <Version>1.3.1</Version>
     <Description>Generates transitive third-party license notice</Description>
     <Product>ThirdLicense</Product>
     <Copyright>(c) 2020 Benito Palacios Sánchez</Copyright>
@@ -22,6 +22,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>dotnet-tool;third-party;license;dotnet</PackageTags>
     <PackageReleaseNotes>https://github.com/pleonex/ThirdLicense/releases</PackageReleaseNotes>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>

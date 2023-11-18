@@ -40,7 +40,7 @@ To run the tool make sure you have installed
 
 The program accepts the following arguments:
 
-- **project**: the project file to analyze for third-parties.
+- **project**: the project file to analyze for third-parties or its folder.
 - **output**: the output file path. By default in the current directory with
   name `THIRD-PARTY-NOTICES.TXT`.
 - **endpoint**: optional extra NuGet repository endpoint to look for packages.
