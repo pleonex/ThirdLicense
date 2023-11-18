@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/ThirdLicense/bin/Debug/net6.0/ThirdLicense.dll",
+            "program": "${workspaceFolder}/src/ThirdLicense/bin/Debug/net8.0/ThirdLicense.dll",
             "args": [ "--project", "${workspaceFolder}/src/ThirdLicense/ThirdLicense.csproj" ],
             "cwd": "${workspaceFolder}/src/ThirdLicense",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console

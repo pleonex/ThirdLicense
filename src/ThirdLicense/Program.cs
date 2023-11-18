@@ -21,7 +21,6 @@ namespace ThirdLicense
 {
     using System;
     using System.CommandLine;
-    using System.CommandLine.Invocation;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -44,30 +43,50 @@ namespace ThirdLicense
         /// <returns>The return code of the application.</returns>
         internal static Task<int> Main(string[] args)
         {
-            var rootCommand = new RootCommand("Generates transitive third-party license notice") {
-                new Option<string>("--project") {
-                    Description = "Project file to analyze third-parties",
-                    IsRequired = true,
-                },
-                new Option<string>("--endpoint") {
-                    Description = "Additional NuGet repository endpoint",
-                    IsRequired = false,
-                },
-                new Option<string>("--output", () => DefaultOutputName) {
-                    Description = "Path to the output file",
-                    IsRequired = true,
-                },
+            var projectArg = new Option<FileInfo>("--project") {
+                Description = "Project file to analyze third-parties",
+                IsRequired = true,
+            };
+            var endpointArg = new Option<string>("--endpoint") {
+                Description = "Additional NuGet repository endpoint",
+                IsRequired = false,
+            };
+            var outputArg = new Option<FileInfo>("--output", () => new FileInfo(DefaultOutputName)) {
+                Description = "Path to the output file",
+                IsRequired = true,
             };
 
-            rootCommand.Handler = CommandHandler.Create<string, string, string>(Generate);
+            var rootCommand = new RootCommand("Generates transitive third-party license notice") {
+                projectArg,
+                endpointArg,
+                outputArg,
+            };
+            rootCommand.SetHandler(Generate, projectArg, endpointArg, outputArg);
 
             return rootCommand.InvokeAsync(args);
         }
 
-        static async Task<int> Generate(string project, string endpoint, string output)
+        static async Task<int> Generate(FileInfo project, string endpoint, FileInfo output)
         {
+            Console.WriteLine("Project: {0}", project.FullName);
+            Console.WriteLine("Output file: {0}", output.FullName);
+            if (!string.IsNullOrEmpty(endpoint)) {
+                Console.WriteLine("Endpoint: {0}", endpoint);
+            } else {
+                Console.WriteLine("Default endpoints");
+            }
+
+            if (!project.Exists) {
+                Console.WriteLine("Cannot find project file: {0}", project.FullName);
+                return -1;
+            }
+
+            if (!output.Directory.Exists) {
+                output.Directory.Create();
+            }
+
             Stopwatch watch = Stopwatch.StartNew();
-            var dependencies = DotnetListStdoutAnalyzer.Analyze(project);
+            var dependencies = DotnetListStdoutAnalyzer.Analyze(project.FullName);
 
             using var nugetInspector = new NuGetProtocolInspector();
             if (!string.IsNullOrEmpty(endpoint)) {
@@ -80,7 +99,7 @@ namespace ThirdLicense
                 .SelectAwait(d => new ValueTask<NuspecReader>(nugetInspector.InspectAsync(d)))
                 .Where(x => x != null);
 
-            using var outputStream = new FileStream(output, FileMode.Create);
+            using var outputStream = new FileStream(output.FullName, FileMode.Create);
             await LicenseTextGenerator.Generate(outputStream, packages).ConfigureAwait(false);
 
             watch.Stop();

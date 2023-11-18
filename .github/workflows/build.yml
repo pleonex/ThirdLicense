@@ -12,11 +12,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.100
+        dotnet-version: 8.0.100
     - name: Install dependencies
       run: dotnet restore src/ThirdLicense.sln
     - name: Build
@@ -25,7 +25,7 @@ jobs:
     - name: Stage as .NET global tool
       run: dotnet pack -c Release --no-build -o ./stage/ src/ThirdLicense/ThirdLicense.csproj
     - name: Publish global tool artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         path: ./stage/ThirdLicense*.nupkg
 
@@ -38,6 +38,6 @@ jobs:
     - name: Zip program
       run: pushd ./stage && zip -r ThirdLicense.zip ThirdLicense && popd
     - name: Publish program artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         path: ./stage/ThirdLicense.zip
